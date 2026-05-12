@@ -169,5 +169,44 @@ WiFi, Bed, Cupboard, Laundry, Power Backup"></textarea>
         </aside>
     </div>
 </section>
+<?php
 
+$uploadDir = __DIR__ . '/uploads/videos/';
+
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0777, true);
+}
+
+if (isset($_FILES['property_video']) && $_FILES['property_video']['error'] === 0) {
+
+    $videoTmpPath = $_FILES['property_video']['tmp_name'];
+    $videoName = time() . '_' . basename($_FILES['property_video']['name']);
+
+    $videoSize = $_FILES['property_video']['size'];
+
+    $allowedExtensions = ['mp4', 'mov', 'avi', 'mkv'];
+
+    $extension = strtolower(pathinfo($videoName, PATHINFO_EXTENSION));
+
+    if (!in_array($extension, $allowedExtensions)) {
+        die('Invalid video format.');
+    }
+
+    if ($videoSize > 10 * 1024 * 1024) {
+        die('Video exceeds 10MB limit.');
+    }
+
+    $destination = $uploadDir . $videoName;
+
+    if (move_uploaded_file($videoTmpPath, $destination)) {
+
+        echo "Video uploaded successfully.";
+
+    } else {
+
+        echo "Failed to upload video.";
+
+    }
+}
+?>
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
