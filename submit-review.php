@@ -121,4 +121,157 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 </section>
 
-<?php require_once __DIR__ . '/includes/footer.php'; ?>  
+<?php
+require_once __DIR__ . '/includes/db.php';
+
+$pageTitle = 'Submit Review';
+$currentPage = 'submit-review.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $listingId = (int) ($_POST['listing_id'] ?? 0);
+    $reviewerName = trim($_POST['reviewer_name'] ?? '');
+    $rating = (int) ($_POST['rating'] ?? 0);
+    $reviewText = trim($_POST['review_text'] ?? '');
+
+    if ($listingId <= 0 || $reviewerName === '' || $rating < 1 || $rating > 5 || $reviewText === '') {
+        set_flash('error', 'Please fill all fields properly.');
+        redirect_to(BASE_URL . '/submit-review.php?listing_id=' . $listingId);
+    }
+
+    $proofUpload = upload_file(
+        $_FILES['proof_file'] ?? null,
+        'uploads/reviews',
+        ['jpg', 'jpeg', 'png', 'pdf'],
+        5 * 1024 * 1024,
+        ['image/jpeg', 'image/png', 'application/pdf']
+    );
+
+    if (!$proofUpload['success']) {
+        set_flash('error', 'Upload a valid image or PDF proof.');
+        redirect_to(BASE_URL . '/submit-review.php?listing_id=' . $listingId);
+    }
+
+    $pros = trim($_POST['pros'] ?? '');
+    $cons = trim($_POST['cons'] ?? '');
+
+    $stmt = db()->prepare("
+        INSERT INTO reviews 
+        (listing_id, reviewer_name, rating, review_text, pros, cons, proof_file, approved)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 0)
+    ");
+
+    $stmt->bind_param(
+        'isissss',
+        $listingId,
+        $reviewerName,
+        $rating,
+        $reviewText,
+        $pros,
+        $cons,
+        $proofUpload['path']
+    );
+
+    $success = $stmt->execute();
+    $stmt->close();
+
+    if ($success) {
+        set_flash('success', 'Review submitted successfully.');
+        redirect_to(BASE_URL . '/listing-details.php?id=' . $listingId);
+    }
+
+    set_flash('error', 'Unable to submit review.');
+    redirect_to(BASE_URL . '/submit-review.php?listing_id=' . $listingId);
+}
+
+$listings = [];
+$result = db()->query("
+    SELECT id, title
+    FROM listings
+    WHERE status = 'approved'
+    ORDER BY title ASC
+");
+
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $listings[] = $row;
+    }
+}
+
+require_once __DIR__ . '/includes/header.php';
+?>
+
+<section class="section">
+    <div class="container form-shell">
+
+        <form class="card form-card"
+              action="<?php echo BASE_URL; ?>/submit-review.php"
+              method="POST"
+              enctype="multipart/form-data">
+
+            <h2>Submit Review</h2>
+
+            <div class="form-grid">
+
+                <div class="form-field col-12">
+                    <label>Listing</label>
+                    <select name="listing_id" required>
+                        <option value="">Select Listing</option>
+
+                        <?php foreach ($listings as $listing): ?>
+                            <option value="<?php echo (int) $listing['id']; ?>">
+                                <?php echo e($listing['title']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-field col-6">
+                    <label>Your Name</label>
+                    <input type="text" name="reviewer_name" required>
+                </div>
+
+                <div class="form-field col-6">
+                    <label>Rating</label>
+                    <select name="rating" required>
+                        <option value="">Choose</option>
+                        <option value="5">5 Star</option>
+                        <option value="4">4 Star</option>
+                        <option value="3">3 Star</option>
+                        <option value="2">2 Star</option>
+                        <option value="1">1 Star</option>
+                    </select>
+                </div>
+
+                <div class="form-field col-12">
+                    <label>Review</label>
+                    <textarea name="review_text" rows="5" required></textarea>
+                </div>
+
+                <div class="form-field col-6">
+                    <label>Pros</label>
+                    <textarea name="pros" rows="3"></textarea>
+                </div>
+
+                <div class="form-field col-6">
+                    <label>Cons</label>
+                    <textarea name="cons" rows="3"></textarea>
+                </div>
+
+                <div class="form-field col-12">
+                    <label>Proof File</label>
+                    <input type="file" name="proof_file" required>
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">Submit Review</button>
+            </div>
+
+        </form>
+
+    </div>
+</section>
+
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
