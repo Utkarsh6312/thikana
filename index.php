@@ -366,3 +366,166 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
+<?php
+require_once __DIR__ . '/includes/db.php';
+
+$pageTitle = 'About Us';
+$currentPage = 'about.php';
+
+require_once __DIR__ . '/includes/header.php';
+?>
+
+<section class="page-banner">
+    <div class="container">
+        <div class="surface">
+            <span class="eyebrow">About Thikana</span>
+            <h1>Built to make student housing simpler, safer, and more transparent</h1>
+            <p>
+                Thikana helps students find trusted PGs and hostels without fake listings,
+                hidden charges, or confusing communication. We focus on clarity,
+                trust, and direct contact between students and property owners.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="section-heading">
+            <span class="eyebrow">Why we built this</span>
+            <h2>Student housing often feels stressful and unclear</h2>
+            <p>
+                Many students struggle with misleading photos, hidden fees,
+                unclear rules, and fake availability updates while searching
+                for PGs and hostels. Thikana was created to reduce that confusion
+                and help students make faster and safer decisions.
+            </p>
+        </div>
+
+        <div class="card-grid three">
+            <article class="card icon-card">
+                <div class="icon-chip">✓</div>
+                <h3>Verified Listings</h3>
+                <p>
+                    Listings marked as verified are manually reviewed by the Thikana team
+                    before being shown to students.
+                </p>
+            </article>
+
+            <article class="card icon-card">
+                <div class="icon-chip">Rs</div>
+                <h3>Transparent Pricing</h3>
+                <p>
+                    Rent, security deposit, food details, and important rules
+                    are shown clearly before students contact owners.
+                </p>
+            </article>
+
+            <article class="card icon-card">
+                <div class="icon-chip">WA</div>
+                <h3>Direct Communication</h3>
+                <p>
+                    Students can directly connect with owners on WhatsApp
+                    without complicated chat systems or middle layers.
+                </p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="section-tight">
+    <div class="container">
+        <div class="card-grid two">
+            <div class="card">
+                <span class="eyebrow">Our mission</span>
+                <h2>Trust-first student housing</h2>
+
+                <p>
+                    We want students to spend less time worrying about scams,
+                    fake photos, and unclear pricing — and more time finding
+                    a comfortable place to stay near their college or workplace.
+                </p>
+
+                <ul class="mini-list">
+                    <li>Reduce fake and misleading listings</li>
+                    <li>Promote transparent pricing</li>
+                    <li>Encourage safer student housing choices</li>
+                    <li>Keep communication simple and direct</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <span class="eyebrow">What makes Thikana different</span>
+                <h2>Simple by design</h2>
+
+                <p>
+                    Instead of building a heavy and confusing platform,
+                    Thikana focuses on practical features students actually use.
+                </p>
+
+                <ul class="mini-list">
+                    <li>Simple listing interface</li>
+                    <li>Fixed media format for better clarity</li>
+                    <li>Manual verification system</li>
+                    <li>Roommate community board</li>
+                    <li>Scam reporting support</li>
+                    <li>Comparison system for listings</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="card">
+            <span class="eyebrow">Safety and trust</span>
+            <h2>Important transparency note</h2>
+
+            <p>
+                Verification badges are manually assigned by the Thikana team
+                after reviewing listing details and uploaded media.
+                Verification is not automatic and does not guarantee
+                perfect quality or experience.
+            </p>
+
+            <p>
+                Students are always encouraged to:
+            </p>
+
+            <ul class="mini-list">
+                <li>Visit the property physically if possible</li>
+                <li>Confirm pricing and food details directly</li>
+                <li>Read rules carefully before moving in</li>
+                <li>Report suspicious behavior or misleading information</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="section-tight">
+    <div class="container">
+        <div class="card card-soft">
+            <div class="section-heading">
+                <span class="eyebrow">Get started</span>
+                <h2>Explore trusted listings or list your property</h2>
+                <p>
+                    Whether you are searching for a PG or listing a property,
+                    Thikana keeps the process practical, lightweight, and transparent.
+                </p>
+            </div>
+
+            <div class="button-group">
+                <a class="btn btn-primary" href="<?php echo BASE_URL; ?>/listings.php">
+                    Browse Listings
+                </a>
+
+                <a class="btn btn-outline" href="<?php echo BASE_URL; ?>/owner-list-property.php">
+                    List Your Property
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
