@@ -171,3 +171,52 @@ WiFi, Bed, Cupboard, Laundry, Power Backup"></textarea>
 </section>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
+<?php
+require_once __DIR__ . '/includes/db.php';
+
+$pageTitle = 'Chat With Owner';
+$currentPage = 'chat-owner.php';
+
+$ownerName = $_GET['owner'] ?? 'PG Owner';
+$phone = $_GET['phone'] ?? '';
+
+require_once __DIR__ . '/includes/header.php';
+?>
+
+<section class="section-tight">
+    <div class="container form-shell">
+        <div class="card form-card">
+            <span class="eyebrow">Direct chat</span>
+            <h1>Chat with <?php echo e($ownerName); ?></h1>
+            <p>Send a quick message directly on WhatsApp.</p>
+
+            <form id="chatForm">
+                <div class="form-grid">
+                    <div class="form-field col-12">
+                        <label for="message">Message</label>
+                        <textarea id="message" required>Hello, I saw your PG listing on Thikana. Is it available?</textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit">Open WhatsApp</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+document.getElementById('chatForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    let message = document.getElementById('message').value;
+    let phone = "<?php echo e($phone); ?>";
+
+    let url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
+
+    window.open(url, "_blank");
+});
+</script>
+
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
