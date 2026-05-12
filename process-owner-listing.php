@@ -3,11 +3,11 @@ require_once __DIR__ . '/includes/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     redirect_to(BASE_URL . '/owner-list-property.php');
-}
+} 
 
 $ownerName = trim($_POST['owner_name'] ?? '');
 $phone = normalize_phone($_POST['phone'] ?? '');
-$whatsappNumber = normalize_phone($_POST['whatsapp_number'] ?? '');
+$whatsappNumber = normalize_phone($_POST['whatsapp_number'] ?? ''); 
 $title = trim($_POST['title'] ?? '');
 $address = trim($_POST['address'] ?? '');
 $nearbyCollege = trim($_POST['nearby_college'] ?? '');
@@ -15,17 +15,17 @@ $locationArea = trim($_POST['location_area'] ?? '');
 $rent = (int) ($_POST['rent'] ?? 0);
 $securityDeposit = (int) ($_POST['security_deposit'] ?? 0);
 $foodIncluded = $_POST['food_included'] ?? 'No';
-$genderAllowed = $_POST['gender_allowed'] ?? 'Unisex';
+$genderAllowed = $_POST['gender_allowed'] ?? 'Unisex';  
 $roomType = trim($_POST['room_type'] ?? '');
 $availableSeats = (int) ($_POST['available_seats'] ?? 0);
-$description = trim($_POST['description'] ?? '');
+$description = trim($_POST['description'] ?? ''); 
 $rules = trim($_POST['rules'] ?? '');
 $amenities = trim($_POST['amenities'] ?? '');
 $noHiddenCharges = isset($_POST['no_hidden_charges']) ? 1 : 0;
 $manualVerificationAck = isset($_POST['manual_verification_ack']);
 
 if (
-    $ownerName === '' || $phone === '' || $whatsappNumber === '' || $title === '' || $address === '' ||
+    $ownerName === '' || $phone === '' || $whatsappNumber === '' || $title === '' || $address === '' || 
     $nearbyCollege === '' || $locationArea === '' || $rent <= 0 || $securityDeposit < 0 ||
     $roomType === '' || $availableSeats <= 0 || $description === '' || $rules === '' || $amenities === ''
 ) {
@@ -38,9 +38,9 @@ if ($noHiddenCharges !== 1 || !$manualVerificationAck) {
     redirect_to(BASE_URL . '/owner-list-property.php');
 }
 
-$imageExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-$imageMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
-
+$imageExtensions = ['jpg', 'jpeg', 'png', 'webp'];   
+$imageMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];  
+ 
 $roomUpload = upload_file($_FILES['room_photo'] ?? null, 'uploads/listings', $imageExtensions, 5 * 1024 * 1024, $imageMimeTypes);
 $washroomUpload = upload_file($_FILES['washroom_photo'] ?? null, 'uploads/listings', $imageExtensions, 5 * 1024 * 1024, $imageMimeTypes);
 $kitchenUpload = upload_file($_FILES['kitchen_photo'] ?? null, 'uploads/listings', $imageExtensions, 5 * 1024 * 1024, $imageMimeTypes);
