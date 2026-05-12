@@ -251,3 +251,210 @@ INSERT INTO roommate_posts (
 ('Priya Sen', 'Salt Lake', 7500, 'Techno Main Salt Lake', 'Female', 'Looking for a calm roommate who prefers early nights and shared meals.', '919812340001', 1, DATE_ADD(NOW(), INTERVAL 25 DAY), NOW()),
 ('Manish Gupta', 'Deccan', 6500, 'Fergusson College', 'Male', 'Need a roommate for double sharing near college. I am okay with simple food and study-heavy routine.', '919812340002', 1, DATE_ADD(NOW(), INTERVAL 18 DAY), NOW()),
 ('Sara Khan', 'BTM Layout', 10000, 'Christ University', 'Female', 'Open to co-living if the place is clean, secure, and has power backup.', '919812340003', 1, DATE_ADD(NOW(), INTERVAL 12 DAY), NOW());
+# Roommate Matching System in Same PHP Style as Your Project
+
+```php
+<?php
+require_once __DIR__ . '/includes/db.php';
+
+$pageTitle = 'Roommate Matches';
+$currentPage = 'roommate-matches.php';
+
+$userGender = $_GET['gender'] ?? '';
+$userBudget = isset($_GET['budget']) ? (int) $_GET['budget'] : 0;
+$userArea = trim($_GET['preferred_area'] ?? '');
+$userCollege = trim($_GET['college_or_workplace'] ?? '');
+
+$matches = [];
+
+$sql = "
+    SELECT *
+    FROM roommate_posts
+    WHERE approved = 1
+    AND expires_at > NOW()
+    ORDER BY created_at DESC
+";
+
+$result = db()->query($sql);
+
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+
+        $score = 0;
+
+        // Area matching
+        if (
+            strtolower($row['preferred_area']) === strtolower($userArea)
+        ) {
+            $score += 40;
+        }
+
+        // Budget matching
+        $budgetDifference = abs((int)$row['budget'] - $userBudget);
+
+        if ($budgetDifference <= 1000) {
+            $score += 30;
+        } elseif ($budgetDifference <= 3000) {
+            $score += 15;
+        }
+
+        // Gender matching
+        if (
+            strtolower($row['gender']) === strtolower($userGender)
+            || strtolower($row['gender']) === 'any'
+        ) {
+            $score += 20;
+        }
+
+        // College/workplace matching
+        if (
+            strtolower($row['college_or_workplace']) === strtolower($userCollege)
+        ) {
+            $score += 10;
+        }
+
+        $row['match_score'] = $score;
+
+        $matches[] = $row;
+    }
+}
+
+// Sort highest match first
+usort($matches, function ($a, $b) {
+    return $b['match_score'] <=> $a['match_score'];
+});
+
+require_once __DIR__ . '/includes/header.php';
+?>
+
+<section class="page-banner">
+    <div class="container">
+        <div class="surface">
+            <span class="eyebrow">Roommate matching</span>
+            <h1>Find compatible roommates</h1>
+            <p>Matches are based on area, budget, gender, and college/workplace.</p>
+        </div>
+    </div>
+</section>
+
+<section class="section-tight">
+    <div class="container roommate-layout">
+
+        <form class="card form-card" method="GET" action="<?php echo BASE_URL; ?>/roommate-matches.php">
+
+            <span class="eyebrow">Find matches</span>
+
+            <div class="form-grid">
+
+                <div class="form-field col-6">
+                    <label for="preferred_area">Preferred area</label>
+                    <input
+                        type="text"
+                        id="preferred_area"
+                        name="preferred_area"
+                        required
+                        value="<?php echo e($userArea); ?>"
+                    >
+                </div>
+
+                <div class="form-field col-6">
+                    <label for="budget">Budget</label>
+                    <input
+                        type="number"
+                        id="budget"
+                        name="budget"
+                        required
+                        value="<?php echo e($userBudget); ?>"
+                    >
+                </div>
+
+                <div class="form-field col-6">
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="gender" required>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Any">Any</option>
+                    </select>
+                </div>
+
+                <div class="form-field col-6">
+                    <label for="college_or_workplace">College/workplace</label>
+                    <input
+                        type="text"
+                        id="college_or_workplace"
+                        name="college_or_workplace"
+                        required
+                        value="<?php echo e($userCollege); ?>"
+                    >
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">Find Matches</button>
+            </div>
+
+        </form>
+
+        <div class="details-stack">
+
+            <div class="card">
+                <span class="eyebrow">Best matches</span>
+                <h2>Compatible roommate posts</h2>
+                <p>Sorted by compatibility score.</p>
+            </div>
+
+            <div class="roommate-list">
+
+                <?php foreach ($matches as $match): ?>
+
+                    <article class="roommate-card">
+
+                        <div class="badge-row">
+                            <span class="badge badge-success">
+                                <?php echo (int)$match['match_score']; ?>% Match
+                            </span>
+
+                            <span class="badge badge-info">
+                                <?php echo e($match['preferred_area']); ?>
+                            </span>
+
+                            <span class="badge badge-primary">
+                                Budget <?php echo e(format_price($match['budget'])); ?>
+                            </span>
+                        </div>
+
+                        <h3><?php echo e($match['poster_name']); ?></h3>
+
+                        <div class="roommate-meta">
+                            <span>
+                                <?php echo e($match['college_or_workplace']); ?>
+                            </span>
+
+                            <span>
+                                <?php echo e($match['gender']); ?>
+                            </span>
+                        </div>
+
+                        <p><?php echo e($match['note']); ?></p>
+
+                        <a
+                            class="btn btn-whatsapp"
+                            target="_blank"
+                            rel="noopener"
+                            href="<?php echo e(whatsapp_link($match['whatsapp_number'], 'Hi, I found your roommate profile on Thikana and would like to connect.')); ?>"
+                        >
+                            Talk on WhatsApp
+                        </a>
+
+                    </article>
+
+                <?php endforeach; ?>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
